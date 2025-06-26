@@ -211,8 +211,8 @@ html,
 body,
 #root,
 .app {
-  /* height: 100%;
-  overflow-x: hidden; */
+  /* height: 100%;*/
+  overflow-x: hidden;
 }
 .lk {
   outline: 1px solid red;

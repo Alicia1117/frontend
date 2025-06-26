@@ -69,7 +69,7 @@ export default function TrendSection() {
                 <TrendCard key={card.title} {...card} />
               ))}
             </div>
-            <div className="absolute top-20 left-[40%] -z-10 hidden h-[1350px] w-[90%] rounded-2xl border-4 2xl:block"></div>
+            <div className="absolute top-20 left-[20%] -z-10 hidden h-[1350px] w-[90%] rounded-2xl border-4 2xl:block"></div>
           </div>
         </>
       ) : (

@@ -29,10 +29,10 @@ export default function TrendCard(data: TrendCardProps) {
         </div>
       </div>
       {/* 電腦板 */}
-      <div className="container mx-auto hidden lg:block">
+      <div className="container mx-auto hidden px-4 lg:block">
         <div className="flex">
-          <div className="w-1/2 overflow-hidden rounded-2xl">
-            <img src={data.bgImage} alt={data.title} className="h-[400px] w-full object-cover" />
+          <div className="h-[400px] w-1/2 overflow-hidden rounded-2xl">
+            <img src={data.bgImage} alt={data.title} className="h-full w-full object-cover" />
           </div>
           <div className="flex w-1/2 flex-col gap-y-8 p-8">
             <h3 className="font-bold">{data.title}</h3>

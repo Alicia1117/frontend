@@ -133,7 +133,6 @@ const CustomerServiceChat: React.FC<CustomerServiceChatProps> = ({ isOpen, onClo
             <a
               key={index}
               href={part}
-              target="_blank"
               rel="noopener noreferrer"
               className={`break-all underline hover:opacity-80 ${isUser ? "text-blue-100 hover:text-white" : "text-blue-600 hover:text-blue-800"}`}
               onClick={(e) => {

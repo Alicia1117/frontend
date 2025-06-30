@@ -7,6 +7,7 @@ import {
   // Phone, // 暫時不用，等人工功能完成再加回
   X,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { useCustomerService } from "@/core/hooks/useCustomerService";
 import { useCustomerServiceQuickReplies, useCustomerServiceStore } from "@/store/customer-service";
 import { Message } from "@/core/types/customer-service";
@@ -22,8 +23,14 @@ interface CustomerServiceChatProps {
 
 const CustomerServiceChat: React.FC<CustomerServiceChatProps> = ({ isOpen, onClose, userId, initialCategory = "一般諮詢" }) => {
   const { messages, session, isLoading, isConnected, startSession, sendMessage, closeSession, markAsRead, mutations } = useCustomerService();
-
+  const navigate = useNavigate();
   const quickReplies = useCustomerServiceQuickReplies();
+
+  // 內部域名配置 - 可以根據環境變量或配置文件調整
+  const INTERNAL_DOMAINS = [
+    "https://tickeasy-frontend.onrender.com",
+    window.location.origin, // 當前域名也視為內部連結
+  ];
 
   const [inputValue, setInputValue] = useState("");
   const [showRating, setShowRating] = useState(false);
@@ -127,22 +134,79 @@ const CustomerServiceChat: React.FC<CustomerServiceChatProps> = ({ isOpen, onClo
       const httpsUrlRegex = /(https:\/\/[^\s]+)/g;
       const parts = text.split(httpsUrlRegex);
 
+      // 檢查是否為內部連結的輔助函數
+      const isInternalLink = (url: string): string | null => {
+        for (const domain of INTERNAL_DOMAINS) {
+          if (url.startsWith(domain)) {
+            return domain;
+          }
+        }
+        return null;
+      };
+
+      // 解析內部路徑的輔助函數
+      const parseInternalPath = (url: string, domain: string): string => {
+        try {
+          const urlObj = new URL(url);
+          // 保留路徑、查詢參數和 hash
+          return urlObj.pathname + urlObj.search + urlObj.hash || "/";
+        } catch {
+          // 如果 URL 解析失敗，使用簡單的字符串替換
+          return url.replace(domain, "") || "/";
+        }
+      };
+
       return parts.map((part, index) => {
         if (part.match(httpsUrlRegex)) {
-          return (
-            <a
-              key={index}
-              href={part}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`break-all underline hover:opacity-80 ${isUser ? "text-blue-100 hover:text-white" : "text-blue-600 hover:text-blue-800"}`}
-              onClick={(e) => {
-                e.stopPropagation();
-              }}
-            >
-              {part}
-            </a>
-          );
+          const matchedDomain = isInternalLink(part);
+
+          if (matchedDomain) {
+            // 內部連結：使用 React Router 導航
+            const internalPath = parseInternalPath(part, matchedDomain);
+
+            return (
+              <button
+                key={index}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  try {
+                    navigate(internalPath, {
+                      state: { skipAutoScroll: true },
+                    });
+                    // 可選：關閉客服聊天窗口，讓用戶專注於新頁面
+                    // onClose();
+                  } catch (error) {
+                    console.error("導航錯誤:", error);
+                    // 如果路由導航失敗，降級為外部連結
+                    window.open(part, "_blank", "noopener,noreferrer");
+                  }
+                }}
+                className={`cursor-pointer border-none bg-transparent p-0 text-left break-all underline transition-colors hover:opacity-80 ${
+                  isUser ? "text-blue-100 hover:text-white" : "text-blue-600 hover:text-blue-800"
+                }`}
+                title={`內部連結: ${internalPath}`}
+              >
+                {part}
+              </button>
+            );
+          } else {
+            // 外部連結：使用傳統 a 標籤
+            return (
+              <a
+                key={index}
+                href={part}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`break-all underline transition-colors hover:opacity-80 ${isUser ? "text-blue-100 hover:text-white" : "text-blue-600 hover:text-blue-800"}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                }}
+                title={`外部連結: ${part}`}
+              >
+                {part}
+              </a>
+            );
+          }
         }
         return <span key={index}>{part}</span>;
       });

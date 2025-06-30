@@ -8,7 +8,13 @@ export const useRouterMiddleWare = () => {
   const location = useLocation();
   const isLogin = useAuthStore((state) => state.isLogin);
   useEffect(() => {
-    window.scrollTo(0, 0);
+    // 檢查是否應該跳過自動滾動（例如從客服聊天中點擊內部連結）
+    const shouldSkipScroll = location.state?.skipAutoScroll === true;
+
+    if (!shouldSkipScroll) {
+      window.scrollTo(0, 0);
+    }
+
     const currentPath = location.pathname;
 
     // 修改路由查找邏輯，加入遞歸搜索子路由

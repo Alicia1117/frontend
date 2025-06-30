@@ -170,7 +170,9 @@ const CustomerServiceChat: React.FC<CustomerServiceChatProps> = ({ isOpen, onClo
                 onClick={(e) => {
                   e.stopPropagation();
                   try {
-                    navigate(internalPath);
+                    navigate(internalPath, {
+                      state: { skipAutoScroll: true },
+                    });
                     // 可選：關閉客服聊天窗口，讓用戶專注於新頁面
                     // onClose();
                   } catch (error) {

@@ -41,7 +41,7 @@ export default function Page() {
     refetch();
   }, [refetch]);
   return (
-    <div className="mt-24 flex max-h-[calc(100vh-6rem)] flex-col pb-[400px]">
+    <div className="mt-24 flex flex-col overflow-x-hidden overflow-y-scroll pb-[400px]">
       <Header />
       <main>
         <BannerSection />
